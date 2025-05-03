@@ -1,5 +1,5 @@
 /*Cleansing and Insert Data & Calculate time upload for each table*/
-exec silver.load_silver
+/*Use example exec silver.load_silver/*
 
 create or alter procedure silver.load_silver as
 Begin
