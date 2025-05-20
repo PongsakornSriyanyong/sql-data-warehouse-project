@@ -31,11 +31,11 @@ Begin
 		select
 		cst_id,
 		cst_key,
-		TRIM(cst_firstname) AS cst_firstname,
+		TRIM(cst_firstname) AS cst_firstname, -- Remove all space
 		TRIM(cst_lastname) AS cst_lastname,
-		case when Upper(TRIM(cst_material_status)) = 'S' THEN 'Single'
-			 when Upper(TRIM(cst_material_status)) = 'M' THEN 'Married'
-			 Else 'n\a'
+		case when Upper(TRIM(cst_material_status)) = 'S' THEN 'Single' --Check s and transfer to single
+			 when Upper(TRIM(cst_material_status)) = 'M' THEN 'Married' --same with s
+			 Else 'n\a' --null => n\a
 		END cst_material_status,
 		case when Upper(TRIM(cst_gndr)) = 'F' THEN 'Female'
 			 when Upper(TRIM(cst_gndr)) = 'M' THEN 'Male'
