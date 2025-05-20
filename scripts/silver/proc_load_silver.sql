@@ -47,7 +47,7 @@ Begin
 		*,
 		ROW_NUMBER() Over (partition by cst_id order by cst_create_date DESC) as flag_last
 		from bronze.crm_cust_info
-		where cst_id is not null)
+		where cst_id is not null) -- in case cst_id dulplicate select the last order_date
 		t where flag_last = 1
 		Set @end_time = getdate();
 		Print '>>Load Duration: ' + cast(datediff(second, @start_time, @end_time) AS nvarchar) +' seconds';
@@ -69,10 +69,10 @@ Begin
 		)
 		select 
 		prd_id,
-		REPLACE(SUBSTRING(prd_key,1,5), '-','_') as cat_id,
-		SUBSTRING(prd_key,7,Len(prd_key)) As prd_key,
+		REPLACE(SUBSTRING(prd_key,1,5), '-','_') as cat_id, -- Get first five letters instead old data
+		SUBSTRING(prd_key,7,Len(prd_key)) As prd_key, -- Since the length of prd_key varies for each row, we determine the length dynamically per row. We start from position 7 because the first 6 characters represent the cat_id.
 		prd_nm,
-		ISNULL(prd_cost, 0) AS prd_cost,
+		ISNULL(prd_cost, 0) AS prd_cost, -- If prd_cost not null use prd_cost, Ifnull use 0 instead
 		case upper(trim(prd_line))
 			when  'M' then 'Mountain'
 			when  'R' then 'Road'
@@ -80,7 +80,7 @@ Begin
 			when  'T' then 'Touring'
 			else 'n\a'
 		end as prd_line,
-		cast(prd_start_dt as date) as prd_start_dt,
+		cast(prd_start_dt as date) as prd_start_dt, --change data type to date
 		cast(Lead(prd_start_dt) over (partition by prd_key order by prd_start_dt) as date) as prd_end_dt_test -- subtitue
 		from bronze.crm_prd_info
 		Set @end_time = getdate();
