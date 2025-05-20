@@ -2,9 +2,9 @@
   to import data from csv files and check load times
   truncate tables before loading data
 */
-CREATE OR ALTER PROCEDURE bronze.load_bronze AS
+CREATE OR ALTER PROCEDURE bronze.load_bronze AS --create or adjust table
 BEGIN
-	DECLARE @start_time DATETIME, @end_time DATETIME, @batch_strat_time DATETIME, @batch_end_time DATETIME;
+	DECLARE @start_time DATETIME, @end_time DATETIME, @batch_strat_time DATETIME, @batch_end_time DATETIME; --Batch_start and batch_end = Overall table, start_time and end_time = Each table
 	BEGIN TRY
 		SET @batch_strat_time = GETDATE();
 		PRINT '==========================='
@@ -17,17 +17,17 @@ BEGIN
 
 		SET @start_time = GETDATE();
 		PRINT '>> Truncating Table: bronze.crm_cust_info'
-		TRUNCATE TABLE bronze.crm_cust_info; 
+		TRUNCATE TABLE bronze.crm_cust_info; -- delete data for protect duplicate data before insert new data
 		PRINT '>> Inserting Data Into: bronze.crm_cust_info'
-		BULK INSERT bronze.crm_cust_info
+		BULK INSERT bronze.crm_cust_info -- Import data into table
 		FROM 'C:\Users\lenovo\AppData\Local\Programs\Sql-data-warehouse-project\sql-data-warehouse-project\datasets\source_crm\cust_info.csv'
 		WITH (
-			FIRSTROW = 2,
-			FIELDTERMINATOR = ',',
+			FIRSTROW = 2, -- First row is header so start read second row
+			FIELDTERMINATOR = ',', -- define ตัวคั่นข้อมูล
 			TABLOCK
 		);
-		SET @end_time = GETDATE();
-		PRINT '>> Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + 'seconds';
+		SET @end_time = GETDATE(); -- define time after finish process
+		PRINT '>> Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + 'seconds'; -- Start_time - end_time = Process_time
 		PRINT '>> --------------'
 
 		SET @start_time = GETDATE();
